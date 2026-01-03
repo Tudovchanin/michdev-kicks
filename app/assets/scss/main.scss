@@ -1,0 +1,14 @@
+@use './abstract/fonts';
+@use './abstract/reset';
+@use './abstract/variables';
+@use './abstract/mixins' as *;
+
+
+
+body, #__nuxt {
+  min-height: 100vh;
+}
+
+#__nuxt {
+  background-color: rgb(122, 201, 175);
+}

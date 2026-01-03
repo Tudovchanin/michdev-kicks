@@ -1,0 +1,34 @@
+{
+  "name": "michdev-kicks",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix",
+    "stylelint": "stylelint \"app/**/*.{css,scss,vue}\"",
+    "stylelint:fix": "stylelint \"app/**/*.{css,scss,vue}\" --fix"
+  },
+  "dependencies": {
+    "@nuxt/eslint": "^1.12.1",
+    "@pinia/nuxt": "^0.11.3",
+    "eslint": "^9.39.2",
+    "nuxt": "^4.2.2",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "postcss-html": "^1.8.0",
+    "sass": "^1.97.1",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard-scss": "^16.0.0",
+    "stylelint-order": "^7.0.1",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.2.1"
+  }
+}
