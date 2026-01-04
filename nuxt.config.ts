@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  modules: ['@pinia/nuxt', '@nuxt/eslint'],
+  modules: ['@pinia/nuxt', '@nuxt/eslint', '@nuxt/image'],
 
   nitro: {
     // Сжимает public/ файлы  .br/.gz (-80%)

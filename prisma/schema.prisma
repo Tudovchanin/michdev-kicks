@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"  // для MySQL просто поменяешь на "mysql" и url
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------
+// Пользователи
+// ----------------------------
+model User {
+  id               Int          @id @default(autoincrement())
+  email            String       @unique
+  name             String?
+  gender           String?
+  isBlocked        Boolean      @default(false)
+  isEmailVerified  Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  addresses        Address[]
+  orders           Order[]
+  loginTokens      LoginToken[]
+}
+
+// ----------------------------
+// Токены для входа (passwordless login)
+// ----------------------------
+model LoginToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------
+// Адреса доставки
+// ----------------------------
+model Address {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  title      String?  // например "Дом", "Работа"
+  fullName   String
+  phone      String
+  city       String
+  street     String
+  house      String
+  apartment  String?
+  postalCode String
+  orders     Order[]
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------
+// Продукты
+// ----------------------------
+model Product {
+  id          Int              @id @default(autoincrement())
+  title       String
+  slug        String           @unique
+  description String?
+  brand       String?
+  createdAt   DateTime         @default(now())
+  variants    ProductVariant[]
+  images      Image[]
+}
+
+// ----------------------------
+// Варианты продукта (размер + цвет + stock + цена)
+// ----------------------------
+model ProductVariant {
+  id        Int       @id @default(autoincrement())
+  productId Int
+  size      Int
+  color     String
+  price     Int       // рубли
+  salePrice Int?
+  stock     Int
+  orderItems OrderItem[]
+
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------
+// Изображения продукта
+// ----------------------------
+model Image {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  url       String
+  width     Int?
+  height    Int?
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------
+// Заказы
+// ----------------------------
+model Order {
+  id        Int          @id @default(autoincrement())
+  userId    Int
+  addressId Int
+  status    OrderStatus  @default(NEW)
+  total     Int          // сумма в рублях
+  createdAt DateTime     @default(now())
+  items     OrderItem[]
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address   Address  @relation(fields: [addressId], references: [id], onDelete: Cascade)
+}
+
+enum OrderStatus {
+  NEW
+  PAID
+  SHIPPED
+  DONE
+  CANCELED
+}
+
+// ----------------------------
+// Позиции заказа
+// ----------------------------
+model OrderItem {
+  id               Int             @id @default(autoincrement())
+  orderId          Int
+  productVariantId Int
+  titleSnapshot    String
+  sizeSnapshot     Int
+  colorSnapshot    String
+  priceSnapshot    Int
+  quantity         Int
+
+  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant  @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+}
