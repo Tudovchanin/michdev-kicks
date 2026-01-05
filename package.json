@@ -8,36 +8,34 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-
     "eslint": "eslint .",
     "eslint:fix": "eslint . --fix",
     "stylelint": "stylelint \"app/**/*.{css,scss,vue}\"",
     "stylelint:fix": "stylelint \"app/**/*.{css,scss,vue}\" --fix",
-
- 
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
     "prisma:studio": "npx prisma studio",
-
     "migrate:dev": "npm run prisma:push && npm run prisma:generate",
     "migrate:dev:studio": "npm run prisma:push && npm run prisma:generate && npm run prisma:studio",
-
     "migrate:prod": "npx prisma migrate deploy && npm run prisma:generate",
     "migrate:reset": "npx prisma migrate reset --force && npm run prisma:generate && npm run prisma:studio"
-
   },
   "dependencies": {
     "@nuxt/eslint": "^1.12.1",
     "@nuxt/image": "^2.0.0",
     "@pinia/nuxt": "^0.11.3",
     "@prisma/client": "^6.19.1",
+    "argon2": "^0.44.0",
     "eslint": "^9.39.2",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^7.0.12",
     "nuxt": "^4.2.2",
     "pinia": "^3.0.4",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@types/nodemailer": "^7.0.4",
     "postcss-html": "^1.8.0",
     "prisma": "^6.19.1",
     "sass": "^1.97.1",

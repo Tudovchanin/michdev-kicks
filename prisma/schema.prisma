@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"  // для MySQL просто поменяешь на "mysql" и url
+  provider = "sqlite" // для MySQL просто поменяешь на "mysql" и url
   url      = env("DATABASE_URL")
 }
 
@@ -11,30 +11,111 @@ datasource db {
 // Пользователи
 // ----------------------------
 model User {
-  id               Int          @id @default(autoincrement())
-  email            String       @unique
-  name             String?
-  gender           String?
-  isBlocked        Boolean      @default(false)
-  isEmailVerified  Boolean      @default(false)
-  createdAt        DateTime     @default(now())
-  addresses        Address[]
-  orders           Order[]
-  loginTokens      LoginToken[]
+  id              Int      @id @default(autoincrement())
+  email           String   @unique
+  name            String?
+  gender          String?
+  isBlocked       Boolean  @default(false)
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  addresses Address[]
+  orders    Order[]
+  sessions  Session[] // новые сессии для входа
 }
 
 // ----------------------------
-// Токены для входа (passwordless login)
+// Сессии (passwordless login)
 // ----------------------------
-model LoginToken {
-  id        Int       @id @default(autoincrement())
-  token     String    @unique
-  userId    Int
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique // одно устройство
   expiresAt DateTime
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+
+// ----------------------------
+// Бренды
+// ----------------------------
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+// ----------------------------
+// Размеры
+// ----------------------------
+model Size {
+  id       Int              @id @default(autoincrement())
+  value    Float
+  variants ProductVariant[]
+}
+// ----------------------------
+// Цвета продукта
+// ----------------------------
+model Color {
+  id       Int              @id @default(autoincrement())
+  name     String           @unique
+  hex      String?
+
+  variants ProductVariant[]
+  images Image[]
+}
+// ----------------------------
+// Продукты(КРОССОВКИ)
+// ----------------------------
+model Product {
+  id          Int              @id @default(autoincrement())
+  title       String
+  slug        String           @unique
+  description String?
+  brandId     Int
+  createdAt   DateTime         @default(now())
+  variants    ProductVariant[]
+  images      Image[]
+
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+}
+// ----------------------------
+// Варианты продукта(кроссовок) / реальная товарная единица
+// ----------------------------
+model ProductVariant {
+  id        Int  @id @default(autoincrement())
+  productId Int
+  sizeId    Int
+  colorId   Int
+  price     Int
+  salePrice Int?
+  stock     Int
+
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size      Size        @relation(fields: [sizeId], references: [id])
+  color     Color       @relation(fields: [colorId], references: [id])
+  OrderItem OrderItem[]
+
+  @@unique([productId, sizeId, colorId])
+}
+// ----------------------------
+// Картинки продукта
+// ----------------------------
+
+
+
+model Image {
+  id        Int   @id @default(autoincrement())
+  productId Int
+  colorId   Int?  // привязка к цвету, null = общий для всех цветов
+  url       String
+  width     Int?
+  height    Int?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color   Color?  @relation(fields: [colorId], references: [id])
+}
+
 
 // ----------------------------
 // Адреса доставки
@@ -42,7 +123,6 @@ model LoginToken {
 model Address {
   id         Int      @id @default(autoincrement())
   userId     Int
-  title      String?  // например "Дом", "Работа"
   fullName   String
   phone      String
   city       String
@@ -54,87 +134,44 @@ model Address {
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-
 // ----------------------------
-// Продукты
-// ----------------------------
-model Product {
-  id          Int              @id @default(autoincrement())
-  title       String
-  slug        String           @unique
-  description String?
-  brand       String?
-  createdAt   DateTime         @default(now())
-  variants    ProductVariant[]
-  images      Image[]
-}
-
-// ----------------------------
-// Варианты продукта (размер + цвет + stock + цена)
-// ----------------------------
-model ProductVariant {
-  id        Int       @id @default(autoincrement())
-  productId Int
-  size      Int
-  color     String
-  price     Int       // рубли
-  salePrice Int?
-  stock     Int
-  orderItems OrderItem[]
-
-  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-// ----------------------------
-// Изображения продукта
-// ----------------------------
-model Image {
-  id        Int      @id @default(autoincrement())
-  productId Int
-  url       String
-  width     Int?
-  height    Int?
-
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-// ----------------------------
-// Заказы
+// Заказы / один чек / один заказ(в Order может быть много OrderItem)
 // ----------------------------
 model Order {
-  id        Int          @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   userId    Int
   addressId Int
-  status    OrderStatus  @default(NEW)
-  total     Int          // сумма в рублях
-  createdAt DateTime     @default(now())
+  status    OrderStatus @default(NEW)
+  total     Int // сумма в рублях
+  createdAt DateTime    @default(now())
   items     OrderItem[]
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address   Address  @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
 }
+
 
 enum OrderStatus {
-  NEW
-  PAID
-  SHIPPED
-  DONE
-  CANCELED
+  NEW       // заказ создан, но ещё не оплачен
+  PAID      // оплачено, ждёт отправки
+  SHIPPED   // отправлен клиенту
+  DONE      // доставлен и закрыт
+  CANCELED  // отменён до отправки
 }
 
 // ----------------------------
-// Позиции заказа
+// Позиция в заказе / одна позиция в Order
 // ----------------------------
 model OrderItem {
-  id               Int             @id @default(autoincrement())
+  id               Int    @id @default(autoincrement())
   orderId          Int
   productVariantId Int
   titleSnapshot    String
-  sizeSnapshot     Int
+  sizeSnapshot     Float
   colorSnapshot    String
   priceSnapshot    Int
   quantity         Int
 
-  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productVariant   ProductVariant  @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 }
