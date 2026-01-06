@@ -14,6 +14,7 @@ enum UserRole {
   ADMIN
   USER
 }
+
 model User {
   id              Int      @id @default(autoincrement())
   email           String   @unique
@@ -22,7 +23,8 @@ model User {
   role            UserRole @default(USER)
   isBlocked       Boolean  @default(false)
   isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   addresses Address[]
   orders    Order[]
@@ -36,7 +38,8 @@ model Session {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique // одно устройство
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -47,6 +50,9 @@ model Session {
 model Brand {
   id       Int       @id @default(autoincrement())
   name     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   products Product[]
 }
 
@@ -56,6 +62,9 @@ model Brand {
 model Size {
   id       Int              @id @default(autoincrement())
   value    Float
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   variants ProductVariant[]
 }
 
@@ -66,6 +75,8 @@ model Color {
   id   Int     @id @default(autoincrement())
   name String  @unique
   hex  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   variants ProductVariant[]
   images   Image[]
@@ -96,10 +107,13 @@ model Category {
   description String?
   image       String?
   parentId    Int?
-  children    Category[] @relation("CategoryTree")
-  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   products Product[]
+
+  children    Category[] @relation("CategoryTree")
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
 }
 
 // ----------------------------
@@ -115,7 +129,9 @@ model Product {
   categoryId  Int
   isNew       Boolean          @default(false)
   isFeatured  Boolean          @default(false)
-  createdAt   DateTime         @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   variants    ProductVariant[]
   images      Image[]
 
@@ -134,6 +150,8 @@ model ProductVariant {
   price     Int
   salePrice Int?
   stock     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   size      Size        @relation(fields: [sizeId], references: [id])
@@ -153,6 +171,8 @@ model Image {
   url       String
   width     Int?
   height    Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   color   Color?  @relation(fields: [colorId], references: [id])
@@ -162,7 +182,7 @@ model Image {
 // Адреса доставки
 // ----------------------------
 model Address {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   userId     Int
   fullName   String
   phone      String
@@ -171,9 +191,11 @@ model Address {
   house      String
   apartment  String?
   postalCode String
-  orders     Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ----------------------------
@@ -186,6 +208,7 @@ model Order {
   status    OrderStatus @default(NEW)
   total     Int // сумма в рублях
   createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   items     OrderItem[]
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -204,7 +227,7 @@ enum OrderStatus {
 // Позиция в заказе / одна позиция в Order
 // ----------------------------
 model OrderItem {
-  id               Int    @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   orderId          Int
   productVariantId Int
   titleSnapshot    String
@@ -212,6 +235,8 @@ model OrderItem {
   colorSnapshot    String
   priceSnapshot    Int
   quantity         Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)

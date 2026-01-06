@@ -1,12 +1,12 @@
 import type { H3Event } from 'h3';
-import type { UserBase, Role } from "~/shared/types";
+import type { Role } from '../../shared/types/user'
 
 
 
 
 export function getAccessToken(e: H3Event): string {
   const authorization = getRequestHeader(e, "authorization");
-  
+
   if (!authorization) {
     throw createError({
       statusCode: 401,
