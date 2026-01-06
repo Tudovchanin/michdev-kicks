@@ -36,7 +36,6 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 // ----------------------------
 // Бренды
 // ----------------------------
@@ -45,6 +44,7 @@ model Brand {
   name     String    @unique
   products Product[]
 }
+
 // ----------------------------
 // Размеры
 // ----------------------------
@@ -53,17 +53,50 @@ model Size {
   value    Float
   variants ProductVariant[]
 }
+
 // ----------------------------
 // Цвета продукта
 // ----------------------------
 model Color {
-  id       Int              @id @default(autoincrement())
-  name     String           @unique
-  hex      String?
+  id   Int     @id @default(autoincrement())
+  name String  @unique
+  hex  String?
 
   variants ProductVariant[]
-  images Image[]
+  images   Image[]
 }
+
+// ----------------------------
+// Гендер
+// ----------------------------
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
+// Lifestyle — повседневные кроссовки
+// Running — беговые
+// Basketball — баскетбольные
+// Training — для тренировок и зала
+// Skate — для скейтборда
+
+// ----------------------------
+// Категории кроссовок
+// ----------------------------
+model Category {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  image       String?
+  parentId    Int?
+  children    Category[] @relation("CategoryTree")
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+
+  products Product[]
+}
+
 // ----------------------------
 // Продукты(КРОССОВКИ)
 // ----------------------------
@@ -73,12 +106,18 @@ model Product {
   slug        String           @unique
   description String?
   brandId     Int
+  gender      Gender           @default(UNISEX)
+  categoryId  Int
+  isNew       Boolean          @default(false)
+  isFeatured  Boolean          @default(false)
   createdAt   DateTime         @default(now())
   variants    ProductVariant[]
   images      Image[]
 
-  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand    Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
 }
+
 // ----------------------------
 // Варианты продукта(кроссовок) / реальная товарная единица
 // ----------------------------
@@ -98,16 +137,14 @@ model ProductVariant {
 
   @@unique([productId, sizeId, colorId])
 }
+
 // ----------------------------
 // Картинки продукта
 // ----------------------------
-
-
-
 model Image {
-  id        Int   @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   productId Int
-  colorId   Int?  // привязка к цвету, null = общий для всех цветов
+  colorId   Int? // привязка к цвету, null = общий для всех цветов
   url       String
   width     Int?
   height    Int?
@@ -116,12 +153,11 @@ model Image {
   color   Color?  @relation(fields: [colorId], references: [id])
 }
 
-
 // ----------------------------
 // Адреса доставки
 // ----------------------------
 model Address {
-  id         Int      @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   userId     Int
   fullName   String
   phone      String
@@ -132,8 +168,9 @@ model Address {
   postalCode String
   orders     Order[]
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 // ----------------------------
 // Заказы / один чек / один заказ(в Order может быть много OrderItem)
 // ----------------------------
@@ -150,13 +187,12 @@ model Order {
   address Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
 }
 
-
 enum OrderStatus {
-  NEW       // заказ создан, но ещё не оплачен
-  PAID      // оплачено, ждёт отправки
-  SHIPPED   // отправлен клиенту
-  DONE      // доставлен и закрыт
-  CANCELED  // отменён до отправки
+  NEW // заказ создан, но ещё не оплачен
+  PAID // оплачено, ждёт отправки
+  SHIPPED // отправлен клиенту
+  DONE // доставлен и закрыт
+  CANCELED // отменён до отправки
 }
 
 // ----------------------------
