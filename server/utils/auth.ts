@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3';
-import type { Role } from '../../shared/types/user'
+import type { Role, UserBase } from '@@/shared/types/user'
 
 
 
@@ -27,7 +27,7 @@ export function getAccessToken(e: H3Event): string {
 export function assertValidUser(user: UserBase) {
   if (!user) throw createError({ statusCode: 404, message: "Пользователь не найден" });
   if (user.isBlocked) throw createError({ statusCode: 403, message: "Аккаунт заблокирован" });
-  if (!user.isEmailConfirmed) throw createError({ statusCode: 403, message: "Email не активирован" });
+  if (!user.isEmailVerified) throw createError({ statusCode: 403, message: "Email не активирован" });
 }
 
 export function assertRole(user: UserBase, role: Role | Role[]) {
