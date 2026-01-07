@@ -1,7 +1,6 @@
-import type { SessionBase } from "./auth";
+import type { CreateSession, SessionBase } from '@@/server/types/auth';
 
 export type SessionRepository = {
-  findById(id: number): Promise<SessionBase | null>;
-  deleteSession(id: number): Promise<{ count: number }>;
-
+  findById(id: string): Promise<SessionBase | null>;
+  deleteSession(id: string): Promise<{ count: number }>;
 }

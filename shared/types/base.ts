@@ -1,5 +1,7 @@
-export type Base = {
-  id: number
+
+
+export type Base<T = number> = {
+  id: T
   createdAt: Date
   updatedAt: Date
 }
