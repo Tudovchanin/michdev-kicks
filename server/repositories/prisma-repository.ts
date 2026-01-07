@@ -7,9 +7,9 @@ export const prismaSessionRepository: SessionRepository = {
 
 
   async createSession(data:CreateSession){
-    return 
-
+    return await prisma.session.create({data});
   },
+
   async findById(id: string) {
     return prisma.session.findUnique({ where: { id } });
   },
@@ -17,4 +17,12 @@ export const prismaSessionRepository: SessionRepository = {
   async deleteSession(id:string) {
     return prisma.session.deleteMany({ where: { id } }); 
   },
+
+  async deleteByUserId(userId: number) {
+    return prisma.session.deleteMany({ where: { userId } });
+  },
+
+  async deleteAll() {
+    return prisma.session.deleteMany();
+  }
 };
