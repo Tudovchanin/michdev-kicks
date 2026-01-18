@@ -21,7 +21,11 @@ const authService = new AuthService({
 export default defineEventHandler(async (e) => {
   const body: CreateUser = await validateBody(registerSchema, e);
 
-  const user = await authService.register(body);
+  const user:UserBase = await authService.register(body);
 
-  return user;
+  return {
+    success: true,
+    message: "Письмо со ссылкой для входа отправлено на вашу почту",
+    email: body.email
+  };
 });

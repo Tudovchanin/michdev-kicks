@@ -15,7 +15,7 @@ export const validateBody = async <T>(schema: ZodType<T>, e: H3Event): Promise<T
     const formattedError = z.treeifyError(result.error);
     throw createError({
       statusCode: 400,
-      statusMessage: "Неверные данные в теле запроса",
+      message: "Неверные данные в теле запроса",
       data: formattedError,
     });
   }

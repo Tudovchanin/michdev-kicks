@@ -16,7 +16,7 @@ enum UserRole {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
+  id              String   @id @default(cuid())
   email           String   @unique
   name            String
   gender          String?
@@ -35,8 +35,8 @@ model User {
 // Сессии (passwordless login)
 // ----------------------------
 model Session {
-  id        String   @id
-  userId    Int      @unique // одно устройство
+  id        String   @id @default(cuid())
+  userId    String      @unique // одно устройство
   expiresAt DateTime
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -182,7 +182,7 @@ model Image {
 // ----------------------------
 model Address {
   id         Int      @id @default(autoincrement())
-  userId     Int
+  userId     String
   fullName   String
   phone      String
   city       String
@@ -202,7 +202,7 @@ model Address {
 // ----------------------------
 model Order {
   id        Int         @id @default(autoincrement())
-  userId    Int
+  userId    String
   addressId Int
   status    OrderStatus @default(NEW)
   total     Int // сумма в рублях
