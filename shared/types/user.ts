@@ -10,3 +10,18 @@ export type UserBase = Base & {
   isBlocked: boolean
   isEmailVerified: boolean
 }
+
+
+export type CreateUser = {
+  name: string,
+  email: string
+}
+
+export type LoginUser = {
+  email: string;
+};
+
+export type UpdateProfile = {
+  name?: string;
+  gender?: string | null;
+};

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // для MySQL просто поменяешь на "mysql" и url
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -28,7 +28,7 @@ model User {
 
   addresses Address[]
   orders    Order[]
-  sessions  Session[] // новые сессии для входа
+  session   Session? 
 }
 
 // ----------------------------

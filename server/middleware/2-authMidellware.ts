@@ -4,24 +4,27 @@
 
 export default defineEventHandler((e) => {
 
-  const path = e.path
+  const path = ('/') as string;
 
+
+  
   const publicApi = [
     '/api/auth/login',
     '/api/auth/register',
   ]
 
   if (!path.startsWith('/api/') || publicApi.includes(path)) {
-    return
+    console.log('public route');
+    return;
   }
 
-  const sessionId = getCookie(e, 'sessionId')
+  // const sessionId = getCookie(e, 'sessionId')
 
-  try {
+  // try {
    
 
-  } catch (error) {
-    throw createError({ statusCode: 401, message: "ошибка" });
-  }
+  // } catch (error) {
+  //   throw createError({ statusCode: 401, message: "ошибка" });
+  // }
 
 })
