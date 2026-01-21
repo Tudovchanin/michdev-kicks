@@ -2,9 +2,9 @@
 import jwt from 'jsonwebtoken';
 
 
-export type MagicTokenPayload = { sub: number; iat: number; exp: number };
+export type MagicTokenPayload = { sub: string; iat: number; exp: number };
 
-export function generateMagicToken(payload: { userId: number }): string {
+export function generateMagicToken(payload: { userId: string }): string {
   const config = useRuntimeConfig();
   const secret = config.jwtMagicTokenSecret;
   return jwt.sign(

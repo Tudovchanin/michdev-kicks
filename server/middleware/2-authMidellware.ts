@@ -1,13 +1,8 @@
 
-
-
-
-export default defineEventHandler((e) => {
+export default defineEventHandler(() => {
 
   const path = ('/') as string;
 
-
-  
   const publicApi = [
     '/api/auth/login',
     '/api/auth/register',

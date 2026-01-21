@@ -2,6 +2,9 @@
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt({
+
+  
+
   // Добавлено правило для настройки поведения self-closing тегов в Vue-шаблонах
   rules: {
     "vue/html-self-closing": ["error", {
@@ -12,6 +15,9 @@ export default withNuxt({
       },
       svg: "always",
       math: "always"
+    }],
+    "vue/multi-word-component-names": ["error", {
+      "ignores": ["default", "index", "error", "404"] 
     }],
   }
 })

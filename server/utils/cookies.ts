@@ -2,26 +2,27 @@
 import type { H3Event } from 'h3';
 
 
-export function clearAuthCookie(e: H3Event) {
+export function clearSessionCookie(e: H3Event) {
   const isProd = process.env.NODE_ENV === 'production';
 
-  setCookie(e, 'tokenRefresh', '', {
+  setCookie(e, 'session', '', {
     httpOnly: true,
     secure: isProd,
     sameSite: 'lax',
     path: '/',
-    maxAge: 0
+    expires: new Date(0),
+    maxAge: 0 
   });
 }
 
-export function setAuthCookie(e: any, token: string, validityPeriodMs: number) {
+export function setSessionCookie(e: H3Event, token: string, expiresAt: Date) {
   const isProd = process.env.NODE_ENV === 'production';
 
-  setCookie(e, 'tokenRefresh', token, {
+  setCookie(e, 'session', token, {
     httpOnly: true,
     secure: isProd,
     sameSite: 'lax',
     path: '/',
-    maxAge: validityPeriodMs / 1000
+    expires: expiresAt
   });
 }
